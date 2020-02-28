@@ -21,6 +21,6 @@ Description: A modern version of Minesweeper. This project was created using pyt
 - An explosion gif on losing
 - Volume control
 
-# Credits
+# About
 - Code written by Justin Voo
 - Sprites drawn by UIJess
