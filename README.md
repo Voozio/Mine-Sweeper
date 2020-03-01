@@ -29,10 +29,10 @@ Description: A modern version of Minesweeper. This project was created using pyt
 <b>Main Menu (Under Construction)</b><br>
 ![Image of main menu](https://github.com/Voozio/Images/blob/master/Mine%20Sweeper/main_menu.png?raw=true)
 
-<b>Easy Difficulty</b><br>
+<b>Easy Difficulty (New Game)</b><br>
 ![Image of easy board](https://github.com/Voozio/Images/blob/master/Mine%20Sweeper/easy.png?raw=true)
 
-<b>Medium Difficulty</b><br>
+<b>Medium Difficulty (Game Won)</b><br>
 ![Image of medium board](https://github.com/Voozio/Images/blob/master/Mine%20Sweeper/medium.png?raw=true)
 
 <b>Hard Difficulty</b><br>
