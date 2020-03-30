@@ -67,7 +67,8 @@ class App:
                     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                         self.menu.no_click()
                 elif self.menu.get_menu_state() == "rules_menu" or self.menu.get_menu_state() == "credits_menu":
-                    if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 or \
+                            event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                         self.menu.set_menu_state("main_menu")
                     else:
                         self.menu.no_click()
@@ -137,6 +138,8 @@ class App:
                 self.pause_menu.draw(self.screen)
             else:
                 self.board.draw(self.screen)
+                if self.board.is_game_over():
+                    self.board.next_explosion()
         pygame.display.update()
 
     def main_loop(self):

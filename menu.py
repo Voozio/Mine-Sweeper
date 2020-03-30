@@ -10,6 +10,7 @@ BUTTON_H = 50
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (150, 150, 150)
+GREEN = (150, 225, 75)
 
 
 class Menu:
@@ -23,14 +24,14 @@ class Menu:
         self.state = "main_menu"
         self.difficulty = None
 
-        self.play_button = button.Button(0, 430, BUTTON_W, BUTTON_H, GRAY, 1, "Play")
-        self.rules_button = button.Button(0, 490, BUTTON_W, BUTTON_H, GRAY, 1, "Rules")
-        self.quit_button = button.Button(0, 550, BUTTON_W, BUTTON_H, GRAY, 1, "Quit")
-        self.easy_button = button.Button(0, 430, BUTTON_W, BUTTON_H, GRAY, 1, "Easy")
-        self.medium_button = button.Button(0, 490, BUTTON_W, BUTTON_H, GRAY, 1, "Medium")
-        self.hard_button = button.Button(0, 550, BUTTON_W, BUTTON_H, GRAY, 1, "Hard")
-        self.credits_button = button.Button(634, 550, BUTTON_W, BUTTON_H, GRAY, 2, "Credits")
-        self.back_button = button.Button(634, 550, BUTTON_W, BUTTON_H, GRAY, 2, "Back")
+        self.play_button = button.Button(0, 430, BUTTON_W, BUTTON_H, GREEN, "Play")
+        self.rules_button = button.Button(0, 490, BUTTON_W, BUTTON_H, GREEN, "Rules")
+        self.quit_button = button.Button(0, 550, BUTTON_W, BUTTON_H, GREEN, "Quit")
+        self.easy_button = button.Button(0, 430, BUTTON_W, BUTTON_H, GREEN, "Easy")
+        self.medium_button = button.Button(0, 490, BUTTON_W, BUTTON_H, GREEN, "Medium")
+        self.hard_button = button.Button(0, 550, BUTTON_W, BUTTON_H, GREEN, "Hard")
+        self.credits_button = button.Button(634, 550, BUTTON_W, BUTTON_H, GREEN, "Credits")
+        self.back_button = button.Button(634, 550, BUTTON_W, BUTTON_H, GREEN, "Back")
 
     def get_menu_state(self):
         return self.state
@@ -149,7 +150,7 @@ class Menu:
         rect_border = pygame.Rect((surface_rect_x - 1, surface_rect_y - 1), (width + 2, height + 2))
 
         surface.fill(BLACK, rect_border)
-        surface.fill(GRAY, rect)
+        surface.fill(GREEN, rect)
 
     # noinspection PyMethodMayBeStatic
     def draw_credits(self, surface):
@@ -168,17 +169,23 @@ class Menu:
         rect_border = pygame.Rect((surface_rect_x - 1, surface_rect_y - 1), (width + 2, height + 2))
 
         created = "Created by Justin Voo"
-        updated = "Last Updated on February 14, 2020"
+        icons = "Sprites drawn by UIJess"
+        updated = "Last Updated on March 29, 2020"
 
         text1 = font.render(created, True, BLACK)
         text1_rect = text1.get_rect()
-        text1_rect.center = ((surface_rect_x + width/2), (surface_rect_y + height/3))
+        text1_rect.center = ((surface_rect_x + width/2), (surface_rect_y + height/4))
 
-        text2 = font.render(updated, True, BLACK)
+        text2 = font.render(icons, True, BLACK)
         text2_rect = text2.get_rect()
-        text2_rect.center = ((surface_rect_x + width/2), (surface_rect_y + height*(2/3)))
+        text2_rect.center = ((surface_rect_x + width/2), (surface_rect_y + height*(1/2)))
+
+        text3 = font.render(updated, True, BLACK)
+        text3_rect = text3.get_rect()
+        text3_rect.center = ((surface_rect_x + width/2), (surface_rect_y + height*(3/4)))
 
         surface.fill(BLACK, rect_border)
-        surface.fill(GRAY, rect)
+        surface.fill(GREEN, rect)
         surface.blit(text1, text1_rect)
         surface.blit(text2, text2_rect)
+        surface.blit(text3, text3_rect)

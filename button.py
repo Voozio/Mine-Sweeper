@@ -5,13 +5,15 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (150, 150, 150)
 LIGHT_GRAY = (175, 175, 175)
+GREEN = (150, 225, 75)
+LIGHT_GREEN = (175, 240, 140)
 
 
 class Button:
     """
     A class to handle button functionality.
     """
-    def __init__(self, x, y, width, height, color, border_offset, msg = None):
+    def __init__(self, x, y, width, height, color, msg = None):
         """
         x and y are saved for easier recall.
         """
@@ -20,13 +22,15 @@ class Button:
         self.width = width
         self.height = height
         self.color = color
-        self.border_offset = border_offset
         self.msg = msg
 
         self.rect = pygame.Rect((x, y), (width, height))
         if msg is not None:
             self.text, self.text_rect = self.setup_font()
-        self.rect_border = pygame.Rect((x - 1, y - 1), (width + border_offset, height + border_offset))
+        if msg == "Play" or msg == "Rules" or msg == "Quit" or msg == "Easy" or msg == "Medium" or msg == "Hard":
+            self.rect_border = pygame.Rect((x - 1, y - 1), (width + 1, height + 2))
+        else:
+            self.rect_border = pygame.Rect((x - 1, y - 1), (width + 2, height + 2))
 
         self.l_click = False
         self.visible = True
@@ -78,9 +82,9 @@ class Button:
         If the mouse position falls within a button, the button color changes.
         """
         if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
-            self.color = LIGHT_GRAY
+            self.color = LIGHT_GREEN
         else:
-            self.color = GRAY
+            self.color = GREEN
 
     def check_left_click(self, pos):
         """

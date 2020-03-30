@@ -21,10 +21,12 @@ B_HARD = 99
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-IVORY = (255, 255, 240)
 GRAY = (150, 150, 150)
 LIGHT_GRAY = (175, 175, 175)
 DARK_GRAY = (35, 35, 45)
+IVORY = (255, 255, 240)
+SKY_BLUE = (100, 215, 250)
+GREEN = (150, 225, 75)
 
 # Icons
 BOMB_ICON = pygame.image.load("img/bombs/bomb24.png")
@@ -37,7 +39,17 @@ FIVE_ICON = pygame.image.load("img/numbers/5.png")
 SIX_ICON = pygame.image.load("img/numbers/6.png")
 SEVEN_ICON = pygame.image.load("img/numbers/7.png")
 EIGHT_ICON = pygame.image.load("img/numbers/8_1.png")
-# EXPLOSION_ICON = pygame.image.load("img/explosion.png")
+
+EXPLOSION_LIST = [BOMB_ICON,
+                  pygame.image.load("img/explosion/1.png"),
+                  pygame.image.load("img/explosion/2.png"),
+                  pygame.image.load("img/explosion/3.png"),
+                  pygame.image.load("img/explosion/4.png"),
+                  pygame.image.load("img/explosion/5.png"),
+                  pygame.image.load("img/explosion/6.png"),
+                  pygame.image.load("img/explosion/7.png"),
+                  pygame.image.load("img/explosion/8.png"),
+                  pygame.image.load("img/explosion/9.png")]
 
 
 class Board:
@@ -52,6 +64,7 @@ class Board:
         self.win = False
         self.game_over = False
         self.exploded = False
+        self.explosion_num = 0
         self.total_mines = self.set_difficulty(difficulty)
 
         self.bomb_key = [[0 for _ in range(self.side)] for _ in range(self.side)]
@@ -59,7 +72,7 @@ class Board:
 
         self.initialize_key()
 
-        self.board_button = button.Button(0, 0, BUTTON_W, BUTTON_H, GRAY, 2)
+        self.board_button = button.Button(0, 0, BUTTON_W, BUTTON_H, GREEN)
         self.board = [[self.board_button for _ in range(self.side)] for _ in range(self.side)]
 
         self.board_border, self.board_bg = self.initialize_board()
@@ -153,7 +166,7 @@ class Board:
 
         for i in range(self.side):
             for j in range(self.side):
-                self.board[i][j] = button.Button(temp_x, y_pos, BUTTON_W, BUTTON_H, GRAY, 2)
+                self.board[i][j] = button.Button(temp_x, y_pos, BUTTON_W, BUTTON_H, GREEN)
                 temp_x += 25
             y_pos += 25
             temp_x = x_pos
@@ -366,10 +379,16 @@ class Board:
                         self.board[i][j].visible = False
                         self.bomb_key[i][j] = -2
 
+    def next_explosion(self):
+        pygame.time.delay(90)
+        if self.explosion_num < 9:
+            self.explosion_num += 1
+
     def reset(self):
         self.win = False
         self.game_over = False
         self.exploded = False
+        self.explosion_num = 0
 
         self.bomb_key = [[0 for _ in range(self.side)] for _ in range(self.side)]
         self.board_key = [[0 for _ in range(self.side)] for _ in range(self.side)]
@@ -402,15 +421,16 @@ class Board:
                 if self.board[i][j].visible:
                     tile_count += 1
 
-        if self.side == 9 and tile_count == B_EASY:
-            self.game_over = True
-            self.win = True
-        elif self.side == 16 and tile_count == B_MEDIUM:
-            self.game_over = True
-            self.win = True
-        elif self.side == 22 and tile_count == B_HARD:
-            self.game_over = True
-            self.win = True
+        if self.get_flags_remaining() == 0:
+            if self.side == 9 and tile_count == B_EASY:
+                self.game_over = True
+                self.win = True
+            elif self.side == 16 and tile_count == B_MEDIUM:
+                self.game_over = True
+                self.win = True
+            elif self.side == 22 and tile_count == B_HARD:
+                self.game_over = True
+                self.win = True
 
     def draw(self, surface):
         """
@@ -421,7 +441,7 @@ class Board:
         Tiles/Flagged Tiles/Numbers/Bombs
         """
         surface.fill(BLACK, self.game_panel_border)
-        surface.fill(IVORY, self.game_panel_bg)
+        surface.fill(SKY_BLUE, self.game_panel_bg)
         surface.fill(BLACK, self.board_border)
         surface.fill(WHITE, self.board_bg)
 
@@ -437,8 +457,7 @@ class Board:
                 elif self.bomb_key[i][j] == -1:
                     surface.blit(BOMB_ICON, self.board[i][j].get_position())
                 elif self.bomb_key[i][j] == -2:
-                    # Replace with explosion icon once the sprite is ready
-                    surface.blit(BOMB_ICON, self.board[i][j].get_position())
+                    surface.blit(EXPLOSION_LIST[self.explosion_num], self.board[i][j].get_position())
                 elif self.board_key[i][j] != 0:
                     surface.blit(self.determine_number_icon(i, j), self.board[i][j].get_position())
 
@@ -456,15 +475,15 @@ class PauseMenu:
 
         self.resume_button = button.Button(self.menu_rect.centerx - (PAUSE_MENU_BUTTON_W / 2),
                                            self.menu_rect.centery * (1/4),
-                                           PAUSE_MENU_BUTTON_W, PAUSE_MENU_BUTTON_H, GRAY, 2, "Resume")
+                                           PAUSE_MENU_BUTTON_W, PAUSE_MENU_BUTTON_H, GREEN, "Resume")
 
         self.replay_button = button.Button(self.menu_rect.centerx - (PAUSE_MENU_BUTTON_W / 2),
                                            self.menu_rect.centery * (2/4),
-                                           PAUSE_MENU_BUTTON_W, PAUSE_MENU_BUTTON_H, GRAY, 2, "Replay")
+                                           PAUSE_MENU_BUTTON_W, PAUSE_MENU_BUTTON_H, GREEN, "Replay")
 
         self.main_menu_button = button.Button(self.menu_rect.centerx - (PAUSE_MENU_BUTTON_W / 2),
                                               self.menu_rect.centery * (3/4),
-                                              PAUSE_MENU_BUTTON_W, PAUSE_MENU_BUTTON_H, GRAY, 2, "Main Menu")
+                                              PAUSE_MENU_BUTTON_W, PAUSE_MENU_BUTTON_H, GREEN, "Main Menu")
 
     def get_visible(self):
         return self.visible
@@ -514,7 +533,7 @@ class PauseMenu:
         The pause menu is drawn to cover the game board.
         """
         surface.fill(BLACK, self.game_panel_border)
-        surface.fill(IVORY, self.menu_rect)
+        surface.fill(SKY_BLUE, self.menu_rect)
         self.resume_button.draw(surface)
         self.replay_button.draw(surface)
         self.main_menu_button.draw(surface)
