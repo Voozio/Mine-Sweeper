@@ -12,13 +12,13 @@ Description: A modern version of Minesweeper. This project was created using pyt
 - Current flag count
 - Pause menu
 - Reset/replay functionality
+- An explosion animation on loss with a ripple effect from bomb click location
 
 # Features to be Implemented
 - A local high score
-- Complete rules/credits page
+- How To Play page
 - Difficulty control in the board scene
 - 3D buttons and tiles
-- An explosion gif on losing
 - Volume control
 
 # About
