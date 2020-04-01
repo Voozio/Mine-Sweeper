@@ -34,15 +34,27 @@ class Menu:
         self.back_button = button.Button(634, 550, BUTTON_W, BUTTON_H, GREEN, "Back")
 
     def get_menu_state(self):
+        """
+        Returns the current state of the menu.
+        """
         return self.state
 
     def set_menu_state(self, state):
+        """
+        Sets the state of the menu.
+        """
         self.state = state
 
     def get_difficulty(self):
+        """
+        Returns the chosen difficulty.
+        """
         return self.difficulty
 
     def set_difficulty(self, difficulty):
+        """
+        Sets the difficulty.
+        """
         self.difficulty = difficulty
 
     def check_click(self, pos):
@@ -170,7 +182,7 @@ class Menu:
 
         created = "Created by Justin Voo"
         icons = "Sprites drawn by UIJess"
-        updated = "Last Updated on March 29, 2020"
+        updated = "Last Updated on March 31, 2020"
 
         text1 = font.render(created, True, BLACK)
         text1_rect = text1.get_rect()

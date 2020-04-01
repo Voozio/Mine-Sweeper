@@ -105,17 +105,7 @@ class App:
                     else:
                         self.board.no_click()
                         self.pause_menu.no_click()
-                elif self.board.get_win():
-                    self.board.game_over_safe()
-                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        self.menu.check_click(event.pos)
-                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                        self.pause_menu.toggle_visible()
-                    else:
-                        self.board.no_click()
-                        self.pause_menu.no_click()
-                elif not self.board.get_win():
-                    self.board.game_over_explosion()
+                elif self.board.is_game_over():
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         self.menu.check_click(event.pos)
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -138,7 +128,7 @@ class App:
                 self.pause_menu.draw(self.screen)
             else:
                 self.board.draw(self.screen)
-                if self.board.is_game_over():
+                if self.board.is_game_over() and self.board.exploded:
                     self.board.next_explosion()
         pygame.display.update()
 
@@ -166,6 +156,7 @@ class App:
                             self.side_panel.toggle_pause()
                         self.timer = 0
                         self.board.reset()
+                        self.side_panel.reset()
                         self.pause_menu.toggle_visible()
                     elif temp == 2:
                         self.full_reset()
@@ -173,10 +164,19 @@ class App:
                     self.timer += time_delta
                     self.board.update()
                     self.side_panel.update(self.timer, self.board.get_flags_remaining())
+                elif self.board.get_win():
+                    self.side_panel.game_over(1)
+                    self.board.game_over_safe()
+                elif not self.board.get_win():
+                    self.side_panel.game_over(0)
+                    self.board.game_over_explosion()
             self.render()
             time_delta = self.clock.tick(self.fps)
 
     def full_reset(self):
+        """
+        Resets all important variables.
+        """
         self.state = "menu"
         self.menu = menu.Menu()
         self.board = None

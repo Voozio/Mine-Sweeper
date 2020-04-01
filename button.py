@@ -92,6 +92,7 @@ class Button:
         """
         if self.rect.collidepoint(pos[0], pos[1]) and not self.flagged:
             self.l_click = True
+            return True
 
     def check_right_click(self, pos):
         """

@@ -16,7 +16,7 @@ PAUSE_MENU_BUTTON_H = 50
 # Bomb Count
 B_EASY = 10
 B_MEDIUM = 40
-B_HARD = 99
+B_HARD = 84
 
 # Colors
 BLACK = (0, 0, 0)
@@ -59,13 +59,26 @@ class Board:
     def __init__(self, difficulty):
         """
         A button is created for each clickable space on the board and placed into a 2D array.
+        Every time a button is clicked, last_row_col keeps track of which button that is.
+        Once a bomb is clicked, an explosion_order list is created.
+        This list holds lists of tuples for the order at which bombs explode.
+        When the program registers that the game is over, last_row_col should be the location of a bomb.
+        This location will be the center of an exploding ripple effect.
+        To create the ripple, explosion_count starts at 0 and increments every cycle.
+        explosion_count is the number up to and including which explosion_order list should be visible.
+        explosion_num holds the counts for which explosion frame should be shown.
+        explosion_num_count works like like explosion_count, increamenting up to and including those visible.
         """
         self.side = difficulty
         self.win = False
         self.game_over = False
         self.exploded = False
-        self.explosion_num = 0
+        self.explosion_order = []
+        self.explosion_count = 0
+        self.explosion_num = []
+        self.explosion_num_count = 0
         self.total_mines = self.set_difficulty(difficulty)
+        self.last_row_col = (0, 0)
 
         self.bomb_key = [[0 for _ in range(self.side)] for _ in range(self.side)]
         self.board_key = [[0 for _ in range(self.side)] for _ in range(self.side)]
@@ -104,7 +117,10 @@ class Board:
         """
         Tiles are checked to see if they have been clicked with the left mouse button.
         """
-        [[self.board[i][j].check_left_click(pos) for i in range(self.side)] for j in range(self.side)]
+        for i in range(self.side):
+            for j in range(self.side):
+                if self.board[i][j].check_left_click(pos):
+                    self.last_row_col = (i, j)
 
     def check_right_click(self, pos):
         """
@@ -333,7 +349,7 @@ class Board:
         elif self.side == 16:
             total_flags = 40
         else:
-            total_flags = 99
+            total_flags = 84
 
         for i in range(self.side):
             for j in range(self.side):
@@ -372,23 +388,96 @@ class Board:
         """
         if not self.exploded:
             self.exploded = True
+            self.get_explosion_order()
             pygame.time.delay(1000)
-            for i in range(self.side):
-                for j in range(self.side):
-                    if self.bomb_key[i][j] == -1:
-                        self.board[i][j].visible = False
-                        self.bomb_key[i][j] = -2
+        elif self.exploded:
+            if self.explosion_count < len(self.explosion_order):
+                for (i, j) in self.explosion_order[self.explosion_count]:
+                    self.board[i][j].visible = False
+                    self.bomb_key[i][j] = -2
+                self.explosion_count += 1
+                pygame.time.delay(10)
+
+    def get_explosion_order(self):
+        """
+        Determines the order in which the bombs should explode, creating a ripple effect.
+        bombs_left is initialized to the bomb count minus one to account for the bomb clicked.
+        """
+        explosion_order = [[self.last_row_col]]
+        top = self.last_row_col[0] - 1
+        bot = self.last_row_col[0] + 1
+        left = self.last_row_col[1] - 1
+        right = self.last_row_col[1] + 1
+
+        if self.side == 9:
+            bombs_left = 9
+        elif self.side == 16:
+            bombs_left = 39
+        else:
+            bombs_left = 83
+
+        while bombs_left > 0:
+            bombs = []
+            if top >= 0:
+                for side in range(self.side):
+                    if left <= side <= right:
+                        if self.bomb_key[top][side] == -1 and (top, side) not in bombs:
+                            bombs.append((top, side))
+                            bombs_left -= 1
+            if bot < self.side:
+                for side in range(self.side):
+                    if left <= side <= right:
+                        if self.bomb_key[bot][side] == -1 and (bot, side) not in bombs:
+                            bombs.append((bot, side))
+                            bombs_left -= 1
+            if left >= 0:
+                for side in range(self.side):
+                    if top <= side <= bot:
+                        if self.bomb_key[side][left] == -1 and (side, left) not in bombs:
+                            bombs.append((side, left))
+                            bombs_left -= 1
+            if right < self.side:
+                for side in range(self.side):
+                    if top <= side <= bot:
+                        if self.bomb_key[side][right] == -1 and (side, right) not in bombs:
+                            bombs.append((side, right))
+                            bombs_left -= 1
+
+            if len(bombs) != 0:
+                explosion_order.append(bombs)
+            top -= 1
+            bot += 1
+            left -= 1
+            right += 1
+
+        self.explosion_order = explosion_order
+        self.explosion_num = [0 for _ in range(len(self.explosion_order))]
+
+    def get_exploded(self):
+        return self.exploded
 
     def next_explosion(self):
+        """
+        This function increments the explosion frame for each slice of explosion_order every tick.
+        """
         pygame.time.delay(90)
-        if self.explosion_num < 9:
-            self.explosion_num += 1
+        for i in range(self.explosion_num_count):
+            if self.explosion_num[i] < 9:
+                self.explosion_num[i] += 1
+        if self.explosion_num_count < len(self.explosion_order):
+            self.explosion_num_count += 1
 
     def reset(self):
+        """
+        Resets the game board without creating a new one.
+        """
         self.win = False
         self.game_over = False
         self.exploded = False
-        self.explosion_num = 0
+        self.explosion_order = []
+        self.explosion_count = 0
+        self.explosion_num = []
+        self.explosion_num_count = 0
 
         self.bomb_key = [[0 for _ in range(self.side)] for _ in range(self.side)]
         self.board_key = [[0 for _ in range(self.side)] for _ in range(self.side)]
@@ -457,7 +546,18 @@ class Board:
                 elif self.bomb_key[i][j] == -1:
                     surface.blit(BOMB_ICON, self.board[i][j].get_position())
                 elif self.bomb_key[i][j] == -2:
-                    surface.blit(EXPLOSION_LIST[self.explosion_num], self.board[i][j].get_position())
+                    """
+                    First implementation shows all bombs, and then explodes them at the same time.
+                    Second implementation explodes all bombs in a ripple effect starting from the clicked bomb.
+                    """
+                    # for x in range(len(self.explosion_order)):
+                    #     surface.blit(EXPLOSION_LIST[self.explosion_num[x]], self.board[i][j].get_position())
+                    # print(self.explosion_num)
+
+                    for k in range(len(self.explosion_order)):
+                        for (x, y) in self.explosion_order[k]:
+                            if x == i and y == j:
+                                surface.blit(EXPLOSION_LIST[self.explosion_num[k]], self.board[i][j].get_position())
                 elif self.board_key[i][j] != 0:
                     surface.blit(self.determine_number_icon(i, j), self.board[i][j].get_position())
 
