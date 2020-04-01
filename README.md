@@ -19,6 +19,7 @@ Description: A modern version of Minesweeper. This project was created using pyt
 - How To Play page
 - Difficulty control in the board scene
 - 3D buttons and tiles
+- Soundtrack
 - Volume control
 
 # About
