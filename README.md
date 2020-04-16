@@ -16,7 +16,7 @@ Description: A modern version of Minesweeper. This project was created using pyt
 
 # Features to be Implemented
 - A local high score
-- How To Play page
+- Rules page
 - Difficulty control in the board scene
 - 3D buttons and tiles
 - Soundtrack
