@@ -149,7 +149,7 @@ class SidePanel:
     # noinspection PyMethodMayBeStatic
     def retrieve_scores(self):
         scores = []
-        for line in open(f"scoreboard_{self.difficulty}.txt"):
+        for line in open(f"scoreboard_files/scoreboard_{self.difficulty}.txt"):
             line = line[:-1].split(" ")
             scores.append(line)
         self.scores = scores
