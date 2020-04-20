@@ -41,6 +41,9 @@ class App:
         self.timer = 0
         self.fps = 60
 
+        self.name = ""
+        self.retrieved_name = False
+
     def event_loop(self):
         """
         Code is sectioned off by current state.
@@ -64,6 +67,8 @@ class App:
                     self.menu.check_hover(mouse)
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         self.menu.check_click(event.pos)
+                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                        self.menu.set_menu_state("main_menu")
                     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                         self.menu.no_click()
                 elif self.menu.get_menu_state() == "rules_menu" or self.menu.get_menu_state() == "credits_menu":
@@ -77,10 +82,13 @@ class App:
                         self.state = "board"
                         if self.menu.get_difficulty() == "easy":
                             self.board = board.Board(EASY)
+                            self.side_panel.set_difficulty("easy")
                         elif self.menu.get_difficulty() == "medium":
                             self.board = board.Board(MEDIUM)
+                            self.side_panel.set_difficulty("medium")
                         else:
                             self.board = board.Board(HARD)
+                            self.side_panel.set_difficulty("hard")
             elif self.state == "board":
                 if self.pause_menu.get_visible():
                     self.pause_menu.check_hover(mouse)
@@ -106,7 +114,15 @@ class App:
                         self.board.no_click()
                         self.pause_menu.no_click()
                 elif self.board.is_game_over():
-                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if self.board.get_win() and not self.retrieved_name:
+                        if event.type == pygame.KEYDOWN:
+                            if event.unicode.isalpha() and len(self.name) < 3:
+                                self.name += event.unicode
+                            elif event.key == pygame.K_BACKSPACE:
+                                self.name = self.name[:-1]
+                            elif event.key == pygame.K_RETURN and len(self.name) == 3:
+                                self.retrieved_name = True
+                    elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         self.menu.check_click(event.pos)
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                         self.pause_menu.toggle_visible()
@@ -127,9 +143,13 @@ class App:
             if self.pause_menu.get_visible():
                 self.pause_menu.draw(self.screen)
             else:
-                self.board.draw(self.screen)
+                self.board.draw(self.screen, self.name)
                 if self.board.is_game_over() and self.board.exploded:
                     self.board.next_explosion()
+                if self.board.get_win() and not self.retrieved_name:
+                    self.board.set_name_prompt_visibility(True)
+                else:
+                    self.board.set_name_prompt_visibility(False)
         pygame.display.update()
 
     def main_loop(self):
@@ -154,10 +174,7 @@ class App:
                     elif temp == 1:
                         if not self.board.is_game_over():
                             self.side_panel.toggle_pause()
-                        self.timer = 0
-                        self.board.reset()
-                        self.side_panel.reset()
-                        self.pause_menu.toggle_visible()
+                        self.soft_reset()
                     elif temp == 2:
                         self.full_reset()
                 elif not self.board.is_game_over():
@@ -167,11 +184,24 @@ class App:
                 elif self.board.get_win():
                     self.side_panel.game_over(1)
                     self.board.game_over_safe()
+                    if self.retrieved_name:
+                        self.side_panel.update_scores(self.name)
                 elif not self.board.get_win():
                     self.side_panel.game_over(0)
                     self.board.game_over_explosion()
             self.render()
             time_delta = self.clock.tick(self.fps)
+
+    def soft_reset(self):
+        """
+        Resets necessary variables to start a new game.
+        """
+        self.timer = 0
+        self.board.reset()
+        self.side_panel.reset()
+        self.pause_menu.toggle_visible()
+        self.name = ""
+        self.retrieved_name = False
 
     def full_reset(self):
         """
@@ -185,6 +215,9 @@ class App:
 
         self.clock = pygame.time.Clock()
         self.timer = 0
+
+        self.name = ""
+        self.retrieved_name = False
 
 
 def main():

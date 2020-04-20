@@ -98,7 +98,7 @@ class Button:
         """
         Flips flagged if the right mouse button has been clicked.
         """
-        if self.rect.collidepoint(pos[0], pos[1]):
+        if self.rect.collidepoint(pos[0], pos[1]) and self.visible:
             self.flagged = not self.flagged
 
     def draw(self, surface):

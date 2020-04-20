@@ -381,6 +381,7 @@ class Board:
                 for j in range(self.side):
                     if self.bomb_key[i][j] == -1:
                         self.board[i][j].visible = False
+            pygame.time.delay(1000)
 
     def game_over_explosion(self):
         """
@@ -467,6 +468,9 @@ class Board:
         if self.explosion_num_count < len(self.explosion_order):
             self.explosion_num_count += 1
 
+    def set_name_prompt_visibility(self, flag):
+        self.show_name_prompt = flag
+
     def reset(self):
         """
         Resets the game board without creating a new one.
@@ -521,7 +525,7 @@ class Board:
                 self.game_over = True
                 self.win = True
 
-    def draw(self, surface):
+    def draw(self, surface, name):
         """
         The following is the order of items drawn:
 
