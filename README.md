@@ -1,11 +1,11 @@
 # Mine Sweeper
 Description: A modern version of Minesweeper. This project was created using python 3.8.
 
-# Required
+## Required
 - Python 3.x
 - pygame
 
-# Current Features
+## Current Features
 - Main menu
 - Easy, medium, and hard difficulties
 - Timer (works correctly when pausing and ending the game) 
@@ -14,7 +14,7 @@ Description: A modern version of Minesweeper. This project was created using pyt
 - Reset/replay functionality
 - An explosion animation on loss with a ripple effect from bomb click location
 
-# Features to be Implemented
+## Features to be Implemented
 - A local high score
 - Rules page
 - Difficulty control in the board scene
@@ -22,11 +22,11 @@ Description: A modern version of Minesweeper. This project was created using pyt
 - Soundtrack
 - Volume control
 
-# About
+## About
 - Code written by Justin Voo
 - Sprites drawn by UIJess
 
-# Screenshots
+## Screenshots
 <b>Main Menu (Under Construction)</b><br>
 ![Image of main menu](https://github.com/Voozio/Images/blob/master/Mine%20Sweeper/main_menu.png?raw=true)
 
